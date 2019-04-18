@@ -1,6 +1,7 @@
-#include "pch.h"
 
-#include <opencv2/opencv.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 #include <iostream>
 #include <string>
@@ -8,7 +9,7 @@
 using namespace cv;
 using namespace std;
 
-Mat reference = imread("E:\\van_gogh.jpg");
+Mat reference = imread("van_gogh.jpg");
 Mat image = reference.clone();
 Mat temp = image.clone();
 String selectedTool = "None";
@@ -49,10 +50,21 @@ void brightness_tool() {
 	int k = 0;
 	while (k != 27) {
 
+		//code pour OpenCV V4
+
 		//2490368 = Haut
 		//2424832 = Gauche
 		//2621440 = Bas
 		//2555904 = Droite
+
+		//code pour OpenCV V2
+
+		//1113938 = Haut
+		//1113937 = Gauche
+		//1113940 = Bas
+		//1113939 = Droite
+
+
 
 		if (contrast < 1) {
 			contrast = 1;
@@ -61,7 +73,9 @@ void brightness_tool() {
 		imshow(windowName, modified);
 		image.convertTo(modified, -1, contrast, brightness);
 
-		k = waitKeyEx(20);
+		//k = waitKeyEx(20); //V4
+
+		k = waitKey(20); //V2
 
 		/*
 		if (k == 2490368) {
@@ -76,15 +90,17 @@ void brightness_tool() {
 
 		*/
 
-		if (k == 2555904) {
+		if (k == 2555904 || k == 1113939) {
 			brightness += 3;
+			cout << brightness << endl;
 		}
 
-		if (k == 2424832) {
+		if (k == 2424832 || k == 1113937) {
 			brightness -= 3;
+			cout << brightness << endl;
 		}
 
-		if (k == 27) { //ESC
+		if (k == 27 || k == 1048603 ) { //ESC
 			break;
 		}
 
@@ -115,7 +131,8 @@ void resize_tool() {
 		imshow(windowName, aff);
 
 
-		k = waitKeyEx(0);
+		//k = waitKeyEx(0); //V4
+		k = waitKey(0);//V2
 		
 		if (k == 2490368) {
 			addY += 0.1;
@@ -218,19 +235,21 @@ int main(int argc, char** argv)
 
 		imshow(windowName, image);
 		putText(temp, "ESC to exit / c to clear", Point(10, 30), FONT_HERSHEY_PLAIN, 1, Scalar(255, 255, 255), 2);
-		k = waitKeyEx(20);
+		//k = waitKeyEx(20); //V4
+		k = waitKey(20); //V2
+
 		//cout << k << endl;
-		if (k == 99) { //C
+		if (k == 99 || k == 1048675) { //C
 			cout << "Image cleared" << endl;
 			clear();
 		}
 
-		if (k == 98) { //B
+		if (k == 98 || k == 1048674) { //B
 			cout << "Tool: Brightness selected" << endl;
 			brightness_tool();
 		}
 
-		if (k == 114) { //R
+		if (k == 114 || k == 1048690) { //R
 			cout << "Tool: Resize selected" << endl;
 			resize_tool();
 		}
