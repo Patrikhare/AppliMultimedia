@@ -1,5 +1,3 @@
-#include "pch.h"
-
 #include <opencv2/opencv.hpp>
 
 #include <iostream>
@@ -8,7 +6,7 @@
 using namespace cv;
 using namespace std;
 
-Mat reference = imread("E:\\van_gogh.jpg");
+Mat reference = imread("van_gogh.jpg");
 Mat image = reference.clone();
 Mat temp = image.clone();
 String selectedTool = "None";
@@ -101,7 +99,8 @@ void brightness_tool() {
 		//2621440 = Bas
 		//2555904 = Droite
 
-		k = waitKeyEx(20);
+		//k = waitKeyEx(20); //OpenCv V3
+		k = waitKey(20); //OpenCv V2
 
 		if (k == 27) { //ESC
 			break;
@@ -166,6 +165,7 @@ void edgeDetection(){
     /// Show the image
     CannyThreshold(0, 0);
 
+    //k = waitKeyEx(0); //V3
     k = waitKey(0); //V2
 
 
@@ -188,7 +188,8 @@ void resize_tool() {
 		imshow(windowName, aff);
 
 
-		k = waitKeyEx(0);
+		//k = waitKeyEx(0); //V3
+    	k = waitKey(0); //V2
 		
 		if (k == 2490368) {
 			addY += 0.1;
@@ -291,19 +292,22 @@ int main(int argc, char** argv)
 
 		imshow(windowName, image);
 		//putText(temp, "ESC to exit / c to clear", Point(10, 30), FONT_HERSHEY_PLAIN, 1, Scalar(255, 255, 255), 2);
-		k = waitKeyEx(20);
+		
+		//k = waitKeyEx(0); //V3
+    	k = waitKey(0); //V2
+
 		//cout << k << endl;
-		if (k == 99) { //C
+		if (k == 99 || k== 1048675) { //C
 			cout << "Image cleared" << endl;
 			clear();
 		}
 
-		if (k == 98) { //B
+		if (k == 98 || k== 1048674) { //B
 			cout << "Tool: Brightness selected" << endl;
 			brightness_tool();
 		}
 
-		if (k == 114) { //R
+		if (k == 114 || k== 1048690 ) { //R
 			cout << "Tool: Resize selected" << endl;
 			resize_tool();
 		}
