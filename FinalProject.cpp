@@ -1,7 +1,6 @@
+#include "pch.h"
 
-#include <opencv2/core/core.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/opencv.hpp>
 
 #include <iostream>
 #include <string>
@@ -9,10 +8,16 @@
 using namespace cv;
 using namespace std;
 
-Mat reference = imread("van_gogh.jpg");
+Mat reference = imread("E:\\van_gogh.jpg");
 Mat image = reference.clone();
 Mat temp = image.clone();
 String selectedTool = "None";
+Mat brightness_dst;
+
+int beta = 50;
+int alpha = 50;
+int const max_beta = 100;
+int const max_alpha = 100;
 
 
 //Variable for Canny edge detection tool
@@ -52,76 +57,58 @@ void mouse_callback(int event, int x, int y, int flags, void* param) {
 
 }
 
+void BrightnessContrast(int, void*)
+{
+	float alpha2 = (float)alpha / 50;
+	float beta2 = beta - 50;
+	Mat element = Mat::zeros(image.size(), image.type());
+	for (int y = 0; y < image.rows; y++) {
+		for (int x = 0; x < image.cols; x++) {
+			for (int c = 0; c < image.channels(); c++) {
+				element.at<Vec3b>(y, x)[c] = saturate_cast<uchar>(alpha2*image.at<Vec3b>(y, x)[c] + beta2);
+			}
+		}
+	}
+	brightness_dst = element;
+	imshow("Ajust Brightness and Contrast", brightness_dst);
+
+
+}
+
 void brightness_tool() {
 
-	Mat modified;
-	image.copyTo(modified);
+	alpha = 50;
+	beta = 50;
 
-	String windowName = "Brightness Tool";
-	//namedWindow(windowName, WINDOW_AUTOSIZE);
+	String windowName = "Ajust Brightness and Contrast";
+	namedWindow(windowName, WINDOW_AUTOSIZE);
 
-	int contrast = 1;
-	int brightness = 0;
+	moveWindow("Ajust Brightness and Contrast", image.cols, 0);
+	createTrackbar("Brightness :\n ", "Ajust Brightness and Contrast",
+		&beta, max_beta,
+		BrightnessContrast);
+	createTrackbar("contrast :\n ", "Ajust Brightness and Contrast",
+		&alpha, max_alpha,
+		BrightnessContrast);
+
+	BrightnessContrast(0, 0);
 
 	int k = 0;
 	while (k != 27) {
-
-		//code pour OpenCV V4
 
 		//2490368 = Haut
 		//2424832 = Gauche
 		//2621440 = Bas
 		//2555904 = Droite
 
-		//code pour OpenCV V2
+		k = waitKeyEx(20);
 
-		//1113938 = Haut
-		//1113937 = Gauche
-		//1113940 = Bas
-		//1113939 = Droite
-
-
-
-		if (contrast < 1) {
-			contrast = 1;
-		}
-
-		imshow(windowName, modified);
-		image.convertTo(modified, -1, contrast, brightness);
-
-		//k = waitKeyEx(20); //V4
-
-		k = waitKey(20); //V2
-
-		/*
-		if (k == 2490368) {
-			cout << "Contrast+" << endl;
-			contrast += 0.5;
-		}
-
-		if (k == 2621440) {
-			cout << "Contrast-" << endl;
-			contrast -= 0.01;
-		}
-
-		*/
-
-		if (k == 2555904 || k == 1113939) {
-			brightness += 3;
-			cout << brightness << endl;
-		}
-
-		if (k == 2424832 || k == 1113937) {
-			brightness -= 3;
-			cout << brightness << endl;
-		}
-
-		if (k == 27 || k == 1048603 ) { //ESC
+		if (k == 27) { //ESC
 			break;
 		}
 
 		if (k == 115) { //S
-			modified.copyTo(image);
+			brightness_dst.copyTo(image);
 			break;
 		}
 
@@ -131,6 +118,7 @@ void brightness_tool() {
 
 	cout << "Back to Menu" << endl;
 	destroyWindow(windowName);
+	
 }
 
 
@@ -200,8 +188,7 @@ void resize_tool() {
 		imshow(windowName, aff);
 
 
-		//k = waitKeyEx(0); //V4
-		k = waitKey(0);//V2
+		k = waitKeyEx(0);
 		
 		if (k == 2490368) {
 			addY += 0.1;
@@ -303,22 +290,20 @@ int main(int argc, char** argv)
 	while (k != 27) {
 
 		imshow(windowName, image);
-		putText(temp, "ESC to exit / c to clear", Point(10, 30), FONT_HERSHEY_PLAIN, 1, Scalar(255, 255, 255), 2);
-		//k = waitKeyEx(20); //V4
-		k = waitKey(20); //V2
-
+		//putText(temp, "ESC to exit / c to clear", Point(10, 30), FONT_HERSHEY_PLAIN, 1, Scalar(255, 255, 255), 2);
+		k = waitKeyEx(20);
 		//cout << k << endl;
-		if (k == 99 || k == 1048675) { //C
+		if (k == 99) { //C
 			cout << "Image cleared" << endl;
 			clear();
 		}
 
-		if (k == 98 || k == 1048674) { //B
+		if (k == 98) { //B
 			cout << "Tool: Brightness selected" << endl;
 			brightness_tool();
 		}
 
-		if (k == 114 || k == 1048690) { //R
+		if (k == 114) { //R
 			cout << "Tool: Resize selected" << endl;
 			resize_tool();
 		}
