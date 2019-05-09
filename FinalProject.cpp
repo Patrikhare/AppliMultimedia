@@ -102,11 +102,11 @@ void brightness_tool() {
 		//k = waitKeyEx(20); //OpenCv V3
 		k = waitKey(20); //OpenCv V2
 
-		if (k == 27) { //ESC
+		if (k == 27 || k ==1048603) { //ESC
 			break;
 		}
 
-		if (k == 115) { //S
+		if (k == 115 || k == 1048691) { //S
 			brightness_dst.copyTo(image);
 			break;
 		}
@@ -288,7 +288,7 @@ int main(int argc, char** argv)
 
 	int k = 0;
 
-	while (k != 27) {
+	while (k != 27 || k != 1048603) {
 
 		imshow(windowName, image);
 		//putText(temp, "ESC to exit / c to clear", Point(10, 30), FONT_HERSHEY_PLAIN, 1, Scalar(255, 255, 255), 2);
